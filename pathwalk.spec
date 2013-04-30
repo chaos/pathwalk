@@ -7,7 +7,7 @@ Release:
 Summary: Pathwalk - simulate path search
 License: GPL
 Group: Applications/System
-Url: http://code.google.com/p/powerman/
+Url: https://github.com/garlick/pathwalk
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
