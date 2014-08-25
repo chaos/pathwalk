@@ -1,4 +1,38 @@
-## pathwalk
+### pathwalk
+
+The pathwalk benchmark simulates the file system load created by path search.
+First it creates a directory tree containing by default, 16 sub-directories,
+containing 10000 empty files each:
+```
+$ pathwalk -c /tmp/abc
+pathwalk: Created 160001 objects in 2.381s
+```
+Then it measures the time to search for 10000 files trying each of
+the 16 sub-directories in turn, and finding the file in the last directory.
+```
+$ pathwalk -t /tmp/abc
+pathwalk: Found 10000/10000 files in 16 directories in 0.161s
+```
+Finally it can clean up the directory.
+```
+$ ./pathwalk -r /tmp/abc
+pathwalk: Removed 160001 objects in 1.469s
+```
+
+The number of directories, the number of files, and other parameters
+can be set on the command line:
+```
+Usage: pathwalk root-path [-c|-r|-t] [OPTIONS]
+   -l,--length N          set number of directories to search dflt: 16)
+   -f,--files N           set number of files to search for (dflt: 10000)
+   -c,--create            create files and directories
+   -r,--remove            remove files and directories
+   -t,--test              run test
+   -C,--primecache        run one path search before starting timing
+   -F,--failsearch        arrange for search to be unsuccessful
+```
+
+### When is Path Search Used?
 
 Path search is a common UNIX programming idiom and file system use
 case.  It is used in the following cases, to name a few:
@@ -59,36 +93,3 @@ Scalability is further limited by the number of parallel requests that
 must be handled by network file system servers, when nodes are all walking
 the same paths.
 
-### pathwalk benchmark
-
-pathwalk simulates the file system load created by path search.
-First it creates a directory tree containing by default, 16 sub-directories,
-containing 10000 empty files each:
-```
-$ pathwalk -c /tmp/abc
-pathwalk: Created 160001 objects in 2.381s
-```
-Then it measures the time to search for 10000 files trying each of
-the 16 sub-directories in turn, and finding the file in the last directory.
-```
-$ pathwalk -t /tmp/abc
-pathwalk: Found 10000/10000 files in 16 directories in 0.161s
-```
-Finally it can clean up the directory.
-```
-$ ./pathwalk -r /tmp/abc
-pathwalk: Removed 160001 objects in 1.469s
-```
-
-The number of directories, the number of files, and other parameters
-can be set on the command line:
-```
-Usage: pathwalk root-path [-c|-r|-t] [OPTIONS]
-   -l,--length N          set number of directories to search dflt: 16)
-   -f,--files N           set number of files to search for (dflt: 10000)
-   -c,--create            create files and directories
-   -r,--remove            remove files and directories
-   -t,--test              run test
-   -C,--primecache        run one path search before starting timing
-   -F,--failsearch        arrange for search to be unsuccessful
-```
