@@ -38,8 +38,9 @@ Path search is a common UNIX programming idiom and file system use
 case.  It is used in the following cases, to name a few:
 
 * shell or execvp(3) search for executables by iterating over PATH elements
+(mitigated somewhat by shell command hash)
 * ld-linux.so search for shared libraries by iterating over /etc/ld.so.conf
-or LD_LIBRARY_PATH elements (although this is mitigated somewhat by ld.so.cache)
+or LD_LIBRARY_PATH elements (mitigated somewhat by ld.so.cache)
 * python dynamic linking and loading as explored by the Pynamic Benchmark
 * perl module load path
 
@@ -53,20 +54,20 @@ the system default path set to:
   /usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin
 ```
 
-In order to find `hostname`, the shell must perform a system call such as
-stat(2) or execve(2) that will trigger path resolution, as described in
-path_resolution(7), for each possible path starting with
-`/usr/lib64/qt-3.3/bin/hostname` and ending with `/bin/hostname`, where
-it is found.
+In order to find `hostname`, provided it is not already hashed, the
+shell must perform a system call such as stat(2) or execve(2) that
+will trigger path resolution, as described in path_resolution(7),
+for each possible path starting with `/usr/lib64/qt-3.3/bin/hostname`
+and ending with `/bin/hostname`, where it is found.
 
 ### Cache Effects
 
 The dcache assists with this process.   For each directory searched
 unsuccessfully for hostname, a negative dentry is instantiated in
 the dcache for hostname in that directory.  For /bin, a positive dentry
-is instantiated for hostname in that directory.  The next time any process
-on the system does a path lookup for hostname, it will still need to
-walk each directory in the PATH but the path resolution for hostname
+is instantiated for hostname in that directory.  The next time another 
+process on the system does a path lookup for hostname, it will still
+need to walk each directory in the PATH but the path resolution for hostname
 will be short circuited by the existance of the dcache entries, provided
 the entries continue to meet the underlying file systems criteria for
 avoiding revalidation.  In other words, the underlying file system will
